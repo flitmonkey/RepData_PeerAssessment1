@@ -7,12 +7,36 @@ output:
 
 
 ## Loading and preprocessing the data
+First clear out R and set the working directory
+```{r}
+rm(list=ls())
+setwd("C:/_WORK/COURSERA/DataScience/ReproducibleResearch/Proj1/RepData_PeerAssessment1")
+library("sqldf")
+library("ggplot2")
 
+```
+Then read in the csv and change the type of the `date` column
+```{r}
+activity<-read.csv("activity.csv", header = TRUE, na.strings = "NA")
+
+activity$date <- as.Date(activity$date , "%Y-%m-%d")
+head(activity)
+```
 
 
 ## What is mean total number of steps taken per day?
+First subset the data
+```{r}
+activityDay<-sqldf("select date, sum(steps) as TotSteps from activity where steps<>'NA' group by date")
+```
+This is a histogram of the total steps
+```{r}
+p<-ggplot(data=activityDay, aes(activityDay$TotSteps)) + geom_histogram()+labs(title="Histogram of Total steps by day") +
+  labs(x="Total Steps", y="Count") 
+print(p)
+```
 
-
+The mean number of steps, rounded to 1 decimal place, is `r format(round(mean(activityDay$TotSteps), digits=1),nsmall=1)` and the median is `r median(activityDay$TotSteps)`
 
 ## What is the average daily activity pattern?
 
