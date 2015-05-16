@@ -8,50 +8,8 @@ First clear out R and set the working directory
 rm(list=ls())
 setwd("C:/_WORK/COURSERA/DataScience/ReproducibleResearch/Proj1/RepData_PeerAssessment1")
 library("sqldf")
-```
-
-```
-## Warning: package 'sqldf' was built under R version 3.1.3
-```
-
-```
-## Loading required package: gsubfn
-```
-
-```
-## Warning: package 'gsubfn' was built under R version 3.1.3
-```
-
-```
-## Loading required package: proto
-```
-
-```
-## Warning: package 'proto' was built under R version 3.1.3
-```
-
-```
-## Loading required package: RSQLite
-```
-
-```
-## Warning: package 'RSQLite' was built under R version 3.1.3
-```
-
-```
-## Loading required package: DBI
-```
-
-```
-## Warning: package 'DBI' was built under R version 3.1.3
-```
-
-```r
 library("ggplot2")
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.1.3
+library("dplyr")
 ```
 Then read in the csv and change the type of the `date` column
 
@@ -79,10 +37,6 @@ First subset the data
 ```r
 activityDay<-sqldf("select date, sum(steps) as TotSteps from activity where steps<>'NA' group by date")
 ```
-
-```
-## Loading required package: tcltk
-```
 This is a histogram of the total steps
 
 ```r
@@ -96,7 +50,23 @@ print(p)
 The mean number of steps, rounded to 1 decimal place, is 10766.2 and the median is 10765
 
 ## What is the average daily activity pattern?
+First summarise the data by interval.
 
+```r
+activityInterval<-group_by(activity, interval)
+activitybyInterval<-summarise(activityInterval,meanSteps=mean(steps, na.rm=TRUE))
+```
+then plot the average number of steps by 5 minute interval
+
+```r
+q<-ggplot(data=activitybyInterval, aes(x=interval,y=meanSteps)) + geom_line()+labs(title="Time series of Average steps by 5 min interval") +
+  labs(x="Interval", y="Average steps") 
+print(q)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+On average the highest number of steps occurs when `interval=`835.
 
 
 ## Imputing missing values
